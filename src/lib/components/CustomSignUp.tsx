@@ -1,12 +1,11 @@
 import React, { Component } from "react";
-import { SignIn } from "aws-amplify-react";
+import { SignUp } from "aws-amplify-react";
 import { Auth } from 'aws-amplify';
 
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { WithStyles, createStyles, withStyles } from '@material-ui/core/';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
-// import classes from "*.module.scss";
 
 const styles = (theme: Theme) => createStyles({
   root: {
@@ -16,37 +15,34 @@ const styles = (theme: Theme) => createStyles({
   }
 });
 
-type CustomSignInProps = {
+type CustomSignUpProps = {
   // handleInputChange?: Function | undefined,
   // changeState?: Function | undefined,
   override: string
 };
 
-class CustomSignIn extends Component<any> {
-// export default class CustomSignIn extends SignIn<CustomSignInProps> {
+class CustomSignUp extends Component<any> {
   _validAuthStates = ['signIn', 'signedOut', 'signedUp'];
   inputs: {[key: string]: string}= {};
   constructor(props: any) {
     super(props);
-    // this._validAuthStates = ['signIn', 'signedOut', 'signedUp'];
   }
 
-  async signIn(event: any) {
+  async signUp(event: any) {
     console.log(event);
     console.log(this.inputs);
-    // avoid submitting the form
     event.preventDefault();
     let email = this.inputs['email'];
     let password = this.inputs['password'];
-    const user = await Auth.signIn({
-        username: email,
-        password
+    const user = await Auth.signUp({
+      username: email,
+      // email,
+      password
     });
     console.log(user);
     return;
-    
-    // const { username='', password } = this.inputs;
   }
+  
 
   onInputChange(event: any) {
     console.log(event.target);
@@ -55,18 +51,28 @@ class CustomSignIn extends Component<any> {
     this.inputs[event.target.name] = event.target.value;
   }
 
+
   render() {
     const { classes } = this.props;
     return (
       <div className={classes.root}>
         <form>
-          <div>
-            {/* <label
+          {/* <div>
+            <label
               htmlFor='email'
             >
               Email
-            </label> */}
-            <TextField
+            </label>
+            <input
+              id='email'
+              key='email'
+              name='email'
+              onChange={this.props.handleInputChange}
+              type='email'
+              placeholder='Email'
+            />
+          </div> */}
+          <TextField
               id='email'
               label="Email"
               key='email'
@@ -76,14 +82,22 @@ class CustomSignIn extends Component<any> {
               placeholder='Email'
               variant="filled"
             />
-          </div>
-          <div>
-            {/* <label
+          {/* <div>
+            <label
               htmlFor='password'
             >
               Password
-            </label> */}
-            <TextField
+            </label>
+            <input
+              id='password'
+              key='password'
+              name='password'
+              onChange={this.props.handleInputChange}
+              type='password'
+              placeholder='******************'
+            />
+          </div> */}
+          <TextField
               id='password'
               label="Password"
               key='password'
@@ -93,28 +107,19 @@ class CustomSignIn extends Component<any> {
               placeholder='******************'
               variant="filled"
             />
-            <p>
-              Forgot your password?{" "}
-              <a
-                onClick={() => this.props.onStateChange('forgotPassword',{})}
-              >
-                Reset Password
-              </a>
-            </p>
-          </div>
           <div>
             <Button
               type='submit'
-              onClick={(event) => this.signIn(event)}
+              onClick={(event) => this.signUp(event)}
             >
-              Login
+              Sign Up
             </Button>
             <p>
-              No Account?{" "}
+              Already Have An Account?{" "}
               <a
-                onClick={() => this.props.onStateChange('signUp',{})}
+                onClick={() => this.props.onStateChange('signIn',{})}
               >
-                Create Account
+                Sign In
               </a>
             </p>
           </div>
@@ -124,4 +129,4 @@ class CustomSignIn extends Component<any> {
   }
 }
 
-export default withStyles(styles)(CustomSignIn as any);
+export default withStyles(styles)(CustomSignUp as any);
