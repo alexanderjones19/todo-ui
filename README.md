@@ -2,8 +2,8 @@
 
 ## Requirements
 
-* Yarn
-* [NodeJS 10.13+ installed] (https://nodejs.org/en/download/)
+* [Yarn](https://yarnpkg.com/en/docs/install)
+* [NodeJS 10.13+ installed](https://nodejs.org/en/download/)
 
 ## Building the project
 
