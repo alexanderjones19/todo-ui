@@ -32,8 +32,8 @@ class CustomSignIn extends Component<any> {
   }
 
   async signIn(event: any) {
-    console.log(event);
-    console.log(this.inputs);
+    // console.log(event);
+    // console.log(this.inputs);
     // avoid submitting the form
     event.preventDefault();
     let email = this.inputs['email'];
@@ -42,16 +42,16 @@ class CustomSignIn extends Component<any> {
         username: email,
         password
     });
-    console.log(user);
+    // console.log(user);
     return;
     
     // const { username='', password } = this.inputs;
   }
 
   onInputChange(event: any) {
-    console.log(event.target);
-    console.log(event.target.name)
-    console.log(event)
+    // console.log(event.target);
+    // console.log(event.target.name)
+    // console.log(event)
     this.inputs[event.target.name] = event.target.value;
   }
 

@@ -20,6 +20,9 @@ const palette = {
 
 const theme = createMuiTheme({
   palette,
+  typography: {
+    useNextVariants: true
+  },
   overrides: {
     MuiButton: {
       root: {
