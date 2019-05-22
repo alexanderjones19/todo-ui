@@ -1,12 +1,10 @@
 import React, { Component } from "react";
-import { SignIn } from "aws-amplify-react";
 import { Auth } from 'aws-amplify';
 
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { WithStyles, createStyles, withStyles } from '@material-ui/core/';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
-// import classes from "*.module.scss";
 
 const styles = (theme: Theme) => createStyles({
   root: {
@@ -16,25 +14,14 @@ const styles = (theme: Theme) => createStyles({
   }
 });
 
-type CustomSignInProps = {
-  // handleInputChange?: Function | undefined,
-  // changeState?: Function | undefined,
-  override: string
+interface CustomSignInProps extends WithStyles<typeof styles> {
+  
 };
 
-class CustomSignIn extends Component<any> {
-// export default class CustomSignIn extends SignIn<CustomSignInProps> {
-  _validAuthStates = ['signIn', 'signedOut', 'signedUp'];
+class CustomSignIn extends Component<CustomSignInProps> {
   inputs: {[key: string]: string}= {};
-  constructor(props: any) {
-    super(props);
-    // this._validAuthStates = ['signIn', 'signedOut', 'signedUp'];
-  }
-
-  async signIn(event: any) {
-    // console.log(event);
-    // console.log(this.inputs);
-    // avoid submitting the form
+  
+  async signIn(event: React.MouseEvent<HTMLElement>) {
     event.preventDefault();
     let email = this.inputs['email'];
     let password = this.inputs['password'];
@@ -42,16 +29,9 @@ class CustomSignIn extends Component<any> {
         username: email,
         password
     });
-    // console.log(user);
-    return;
-    
-    // const { username='', password } = this.inputs;
   }
 
   onInputChange(event: any) {
-    // console.log(event.target);
-    // console.log(event.target.name)
-    // console.log(event)
     this.inputs[event.target.name] = event.target.value;
   }
 
@@ -61,11 +41,6 @@ class CustomSignIn extends Component<any> {
       <div className={classes.root}>
         <form>
           <div>
-            {/* <label
-              htmlFor='email'
-            >
-              Email
-            </label> */}
             <TextField
               id='email'
               label="Email"
@@ -78,11 +53,6 @@ class CustomSignIn extends Component<any> {
             />
           </div>
           <div>
-            {/* <label
-              htmlFor='password'
-            >
-              Password
-            </label> */}
             <TextField
               id='password'
               label="Password"
@@ -93,30 +63,14 @@ class CustomSignIn extends Component<any> {
               placeholder='******************'
               variant="filled"
             />
-            <p>
-              Forgot your password?{" "}
-              <a
-                onClick={() => this.props.onStateChange('forgotPassword',{})}
-              >
-                Reset Password
-              </a>
-            </p>
           </div>
           <div>
             <Button
               type='submit'
-              onClick={(event) => this.signIn(event)}
+              onClick={(event) => this.signIn(event!)}
             >
               Login
             </Button>
-            <p>
-              No Account?{" "}
-              <a
-                onClick={() => this.props.onStateChange('signUp',{})}
-              >
-                Create Account
-              </a>
-            </p>
           </div>
         </form>
       </div>
@@ -124,4 +78,4 @@ class CustomSignIn extends Component<any> {
   }
 }
 
-export default withStyles(styles)(CustomSignIn as any);
+export default withStyles(styles)(CustomSignIn);

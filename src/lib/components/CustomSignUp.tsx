@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { SignUp } from "aws-amplify-react";
 import { Auth } from 'aws-amplify';
 
 import TextField from '@material-ui/core/TextField';
@@ -15,63 +14,31 @@ const styles = (theme: Theme) => createStyles({
   }
 });
 
-type CustomSignUpProps = {
-  // handleInputChange?: Function | undefined,
-  // changeState?: Function | undefined,
-  override: string
+interface CustomSignUpProps extends WithStyles<typeof styles> {
+
 };
 
-class CustomSignUp extends Component<any> {
-  _validAuthStates = ['signIn', 'signedOut', 'signedUp'];
+class CustomSignUp extends Component<CustomSignUpProps> {
   inputs: {[key: string]: string}= {};
-  constructor(props: any) {
-    super(props);
-  }
-
-  async signUp(event: any) {
-    // console.log(event);
-    // console.log(this.inputs);
-    event.preventDefault();
+  
+  async signUp() {
     let email = this.inputs['email'];
     let password = this.inputs['password'];
     const user = await Auth.signUp({
       username: email,
-      // email,
       password
     });
-    // console.log(user);
-    return;
   }
-  
 
   onInputChange(event: any) {
-    // console.log(event.target);
-    // console.log(event.target.name)
-    // console.log(event)
     this.inputs[event.target.name] = event.target.value;
   }
-
 
   render() {
     const { classes } = this.props;
     return (
       <div className={classes.root}>
         <form>
-          {/* <div>
-            <label
-              htmlFor='email'
-            >
-              Email
-            </label>
-            <input
-              id='email'
-              key='email'
-              name='email'
-              onChange={this.props.handleInputChange}
-              type='email'
-              placeholder='Email'
-            />
-          </div> */}
           <TextField
               id='email'
               label="Email"
@@ -82,21 +49,6 @@ class CustomSignUp extends Component<any> {
               placeholder='Email'
               variant="filled"
             />
-          {/* <div>
-            <label
-              htmlFor='password'
-            >
-              Password
-            </label>
-            <input
-              id='password'
-              key='password'
-              name='password'
-              onChange={this.props.handleInputChange}
-              type='password'
-              placeholder='******************'
-            />
-          </div> */}
           <TextField
               id='password'
               label="Password"
@@ -110,18 +62,10 @@ class CustomSignUp extends Component<any> {
           <div>
             <Button
               type='submit'
-              onClick={(event) => this.signUp(event)}
+              onClick={() => this.signUp()}
             >
               Sign Up
             </Button>
-            <p>
-              Already Have An Account?{" "}
-              <a
-                onClick={() => this.props.onStateChange('signIn',{})}
-              >
-                Sign In
-              </a>
-            </p>
           </div>
         </form>
       </div>
@@ -129,4 +73,4 @@ class CustomSignUp extends Component<any> {
   }
 }
 
-export default withStyles(styles)(CustomSignUp as any);
+export default withStyles(styles)(CustomSignUp);

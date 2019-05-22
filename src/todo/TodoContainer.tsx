@@ -6,7 +6,6 @@ import { allTodos } from '../graphql/queries';
 import { AllTodosQuery, AllTodosQueryVariables } from '../API';
 
 export default class TodoContainer extends Component {
-
   render() {
     return (
       <Query<AllTodosQuery, AllTodosQueryVariables>
