@@ -1,7 +1,6 @@
 import { ApolloClient } from 'apollo-client';
 import { Auth } from 'aws-amplify';
 import { InMemoryCache } from 'apollo-cache-inmemory';
-import { Mutation } from 'react-apollo';
 import { createHttpLink } from 'apollo-link-http';
 import { setContext } from 'apollo-link-context';
 import gql from 'graphql-tag';
@@ -11,6 +10,12 @@ import aws_config from './aws.config';
 export const GET_BUTTON_TOGGLE = gql`
   {
     buttonToggle @client
+  }
+`;
+
+const typeDefs = gql`
+  extend type ButtonToggle {
+    buttonToggle: Boolean!
   }
 `;
 
@@ -32,6 +37,16 @@ const cache = new InMemoryCache();
 const client = new ApolloClient({
   cache,
   link: authLink.concat(httpLink),
+  typeDefs,
+  resolvers: {
+    Mutation: {
+      toggleButton: (_root, variables, { cache }) => {
+        const query = cache.readQuery({query: GET_BUTTON_TOGGLE});
+        const data = { buttonToggle: !query.buttonToggle };
+        cache.writeData({ data });
+      } 
+    }
+  }
 });
 
 cache.writeData({

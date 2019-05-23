@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import gql from 'graphql-tag';
 
 import { Query, Mutation } from 'react-apollo';
 import { GET_BUTTON_TOGGLE } from '../../client';
@@ -11,19 +12,31 @@ type GetButtonToggleQuery = {
   buttonToggle: boolean
 }
 
+type ToggleButtonMutation = {
+  toggleButton: Function
+}
+
+const TOGGLE_BUTTON = gql`
+  mutation ToggleButton {
+    toggleButton @client
+  }
+`;
+
 class Auth extends Component<AuthProps> {
   render() {
     return (
       <Query<GetButtonToggleQuery> query={GET_BUTTON_TOGGLE}>
-        {({ data, client }) => {
-          return (
-            <button
-              onClick={() => client.writeData({ data: { buttonToggle: !data!.buttonToggle } })}
-            >
-              Toggle: {data!.buttonToggle.toString()}
-            </button>
-          )
-        }}
+        {({ data, client }) => (
+          <Mutation<ToggleButtonMutation> mutation={TOGGLE_BUTTON}>
+            {(toggleButton) => (
+              <button
+                onClick={() => toggleButton()}
+              >
+                Toggle: {data!.buttonToggle.toString()}
+              </button>
+            )}
+          </Mutation>
+        )}
       </Query>
     );
   }
