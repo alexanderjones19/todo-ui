@@ -6,6 +6,8 @@ import { setContext } from 'apollo-link-context';
 import gql from 'graphql-tag';
 
 import aws_config from './aws.config';
+import signIn from './lib/resolvers/signInResolver';
+import signUp from './lib/resolvers/signUpResolver';
 
 export const GET_BUTTON_TOGGLE = gql`
   {
@@ -44,7 +46,9 @@ const client = new ApolloClient({
         const query = cache.readQuery({query: GET_BUTTON_TOGGLE});
         const data = { buttonToggle: !query.buttonToggle };
         cache.writeData({ data });
-      } 
+      },
+      signIn,
+      signUp
     }
   }
 });

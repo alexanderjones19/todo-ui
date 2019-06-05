@@ -20,6 +20,7 @@ const styles = (theme: Theme) => createStyles({
 interface SignUpFormData extends FormData {
   email?: string;
   password?: string;
+  confirmPassword?: string;
 }
 
 interface SignUpFormState {
