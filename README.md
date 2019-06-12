@@ -10,7 +10,7 @@
 ### Dev Server
 
 ```bash
-yarn start
+yarn dev
 ```
 
 ### Build
