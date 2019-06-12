@@ -3,11 +3,12 @@ import { Auth } from 'aws-amplify';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { createHttpLink } from 'apollo-link-http';
 import { setContext } from 'apollo-link-context';
+import * as fetch from 'cross-fetch';
 import gql from 'graphql-tag';
 
 import aws_config from './aws.config';
-import signIn from './lib/resolvers/signInResolver';
-import signUp from './lib/resolvers/signUpResolver';
+// import signIn from './lib/resolvers/signInResolver';
+// import signUp from './lib/resolvers/signUpResolver';
 
 export const GET_BUTTON_TOGGLE = gql`
   {
@@ -22,7 +23,8 @@ const typeDefs = gql`
 `;
 
 const httpLink = createHttpLink({
-  uri: aws_config.API.appsyncGraphqlEndpoint
+  uri: aws_config.API.appsyncGraphqlEndpoint,
+  fetch: fetch as any
 });
 
 const authLink = setContext(async (_, { headers }) => {
@@ -47,8 +49,8 @@ const client = new ApolloClient({
         const data = { buttonToggle: !query.buttonToggle };
         cache.writeData({ data });
       },
-      signIn,
-      signUp
+      // signIn,
+      // signUp
     }
   }
 });
