@@ -1,5 +1,6 @@
 import { ApolloClient } from 'apollo-client';
-import { Auth } from 'aws-amplify';
+import Amplify from '@aws-amplify/core';
+import Auth from '@aws-amplify/auth';
 import { InMemoryCache } from 'apollo-cache-inmemory';
 import { createHttpLink } from 'apollo-link-http';
 import { setContext } from 'apollo-link-context';
@@ -7,14 +8,11 @@ import * as fetch from 'cross-fetch';
 import gql from 'graphql-tag';
 
 import aws_config from './aws.config';
-// import signIn from './lib/resolvers/signInResolver';
-// import signUp from './lib/resolvers/signUpResolver';
+import signIn from './resolvers/signInResolver';
+import signUp from './resolvers/signUpResolver';
+import toggleButton from './resolvers/toggleButtonResolver';
 
-export const GET_BUTTON_TOGGLE = gql`
-  {
-    buttonToggle @client
-  }
-`;
+Amplify.configure(aws_config);
 
 const typeDefs = gql`
   extend type ButtonToggle {
@@ -44,13 +42,9 @@ const client = new ApolloClient({
   typeDefs,
   resolvers: {
     Mutation: {
-      toggleButton: (_root, variables, { cache }) => {
-        const query = cache.readQuery({query: GET_BUTTON_TOGGLE});
-        const data = { buttonToggle: !query.buttonToggle };
-        cache.writeData({ data });
-      },
-      // signIn,
-      // signUp
+      toggleButton,
+      signIn,
+      signUp
     }
   }
 });

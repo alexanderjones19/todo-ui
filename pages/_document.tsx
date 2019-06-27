@@ -24,7 +24,6 @@ class Document extends NextDocument {
 }
 
 Document.getInitialProps = async ctx => {
-  console.log('get nitial props');
   const sheets = new ServerStyleSheets();
   const originalRenderPage = ctx.renderPage;
 

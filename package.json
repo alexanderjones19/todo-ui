@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "test": "jest",
-    "dev": "next",
+    "dev": "concurrently next \"jest --watchAll --ci\"",
     "build": "next build",
     "start": "next start"
   },
@@ -15,11 +15,12 @@
     "apollo-link-http": "^1.5.14",
     "aws-amplify": "^1.1.28",
     "cross-fetch": "^3.0.3",
+    "dotenv": "^8.0.0",
     "graphql-tag": "^2.10.1",
     "next": "^8.1.0",
     "react": "^16.8.6",
     "react-adopt": "^0.6.0",
-    "react-apollo": "^2.5.6",
+    "react-apollo": "^3.0.0-beta.3",
     "react-dom": "^16.8.6",
     "styled-jsx": "^3.2.1"
   },
@@ -32,6 +33,7 @@
     "@zeit/next-typescript": "^1.1.1",
     "babel-core": "^6.26.3",
     "babel-jest": "^24.5.0",
+    "concurrently": "^4.1.0",
     "enzyme": "^3.9.0",
     "enzyme-adapter-react-16": "^1.11.2",
     "jest": "^24.5.0",

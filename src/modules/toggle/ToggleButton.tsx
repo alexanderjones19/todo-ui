@@ -15,7 +15,6 @@ interface ToggleButtonProps {
 
 export default function ToggleButton(props: ToggleButtonProps) {
   const classes = useStyles({});
-
   return (
     <Button variant="contained" className={classes.button} onClick={() => props.toggleButton()}>{props.buttonToggle.toString()}</Button>
   );
