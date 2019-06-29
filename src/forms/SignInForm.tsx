@@ -1,19 +1,19 @@
 import React, { FC } from 'react';
+import useForm from 'react-hook-form';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import { WithStyles, createStyles, withStyles } from '@material-ui/core/';
+import { makeStyles } from '@material-ui/styles';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 
 import FormProps from '../models/FormProps';
-import useForm from '../hooks/useForm';
 
-// const styles = (theme: Theme) => createStyles({
-//   root: {
-//     display: 'flex',
-//     flexDirection: 'column',
-//     backgroundColor: theme.palette.background.default,
-//   }
-// });
+const useStyles = makeStyles((theme: Theme) => ({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+    backgroundColor: theme.palette.background.default,
+  }
+}));
 
 interface SignInFormData {
   email?: string;
@@ -25,11 +25,11 @@ interface SignInFormProps extends FormProps<SignInFormData> {
 };
 
 const SignInForm: FC<SignInFormProps> = ({ onSubmit }) => {
-  // const { classes } = this.props;
-  const {data, handleInputChange, handleSubmit} = useForm<SignInFormData>(onSubmit);
+  const classes = useStyles({});
+  const { register, handleSubmit, errors } = useForm();
   return (
     // <div className={classes.root}>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         {/* consider these divs */}
         <div>
           <TextField
@@ -37,11 +37,12 @@ const SignInForm: FC<SignInFormProps> = ({ onSubmit }) => {
             label='Email'
             key='email'
             name='email'
-            onChange={handleInputChange}
+            inputRef={register({ required: true })}
             type='email'
             placeholder='Email'
             variant='filled'
           />
+          {errors.email && 'Email is required.'}
         </div>
         <div>
           <TextField
@@ -49,11 +50,12 @@ const SignInForm: FC<SignInFormProps> = ({ onSubmit }) => {
             label='Password'
             key='password'
             name='password'
-            onChange={handleInputChange}
+            inputRef={register({ required: true })}
             type='password'
             placeholder='******************'
             variant='filled'
           />
+          {errors.password && 'Password is required.'}
         </div>
         <div>
           <Button
