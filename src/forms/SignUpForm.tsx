@@ -16,6 +16,19 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
+const signUpFormErrors = {
+  email: {
+    required: 'Email is required'
+  },
+  password: {
+    required: 'Password is required'
+  },
+  confirmPassword: {
+    required: 'Must confirm password',
+    matching: 'Passwords must match'
+  }
+};
+
 interface SignUpFormData {
   email?: string;
   password?: string;
@@ -29,8 +42,6 @@ interface SignUpFormProps extends FormProps<SignUpFormData> {
 const SignUpForm: FC<SignUpFormProps> = ({ onSubmit }) => {
   const classes = useStyles({});
   const { register, handleSubmit, errors, watch } = useForm<SignUpFormData>();
-  const passwordValue = watch('password');
-  const confirmPasswordValue = watch('confirmPassword');
   return (
     // <div className={classes.root}>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -41,12 +52,13 @@ const SignUpForm: FC<SignUpFormProps> = ({ onSubmit }) => {
             label='Email'
             key='email'
             name='email'
-            inputRef={register({ required: true })}
+            inputRef={register({ required: signUpFormErrors.email.required })}
             type='email'
             placeholder='Email'
             variant='filled'
+            helperText={errors.email && errors.email.message}
+            error={!!errors.email}
           />
-          {errors.email && 'Email is required.'}
         </div>
         <div>
           <TextField
@@ -55,14 +67,14 @@ const SignUpForm: FC<SignUpFormProps> = ({ onSubmit }) => {
             key='password'
             name='password'
             inputRef={register({
-              required: true,
-              validate: matchingValidator(confirmPasswordValue)
+              required: signUpFormErrors.password.required
             })}
             type='password'
             placeholder='******************'
             variant='filled'
+            helperText={errors.password && errors.password.message}
+            error={!!errors.password}
           />
-          {errors.password && 'Password is required.'}
         </div>
         <div>
           <TextField
@@ -71,14 +83,15 @@ const SignUpForm: FC<SignUpFormProps> = ({ onSubmit }) => {
             key='confirmPassword'
             name='confirmPassword'
             inputRef={register({
-              required: true,
-              validate: matchingValidator(passwordValue)
+              required: signUpFormErrors.confirmPassword.required,
+              validate: matchingValidator('password', watch, signUpFormErrors.confirmPassword.matching)
             })}
             type='password'
             placeholder='******************'
             variant='filled'
+            helperText={errors.confirmPassword && errors.confirmPassword.message}
+            error={!!errors.confirmPassword}
           />
-          {errors.confirmPassword && 'Password confirmation is required.'}
         </div>
         <div>
           <Button

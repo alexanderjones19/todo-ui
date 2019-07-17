@@ -1,14 +1,15 @@
-export default (values: any[] | any) => {
-  return (value) => {
+export default function (names: string[] | string, watch, message) {
+  return function(value) {
     let match = true;
-    if (values instanceof Array) {
-      values.forEach((matchValue) => {
+    var matchValues = watch(names);
+    if (matchValues instanceof Array) {
+      matchValues.forEach((matchValue) => {
         if (value !== matchValue) {
           match = false;
         }
       });
-      return match;
+      return (match ? true : message);
     }
-    return value === values;
+    return (value === matchValues ? true : message);
   };
 };
