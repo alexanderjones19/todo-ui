@@ -11,6 +11,7 @@ import aws_config from './aws.config';
 import signIn from './resolvers/signInResolver';
 import signUp from './resolvers/signUpResolver';
 import toggleButton from './resolvers/toggleButtonResolver';
+import currentUser from './resolvers/currentUserResolver';
 
 Amplify.configure(aws_config);
 
@@ -41,6 +42,9 @@ const client = new ApolloClient({
   link: authLink.concat(httpLink),
   typeDefs,
   resolvers: {
+    Query: {
+      currentUser
+    },
     Mutation: {
       toggleButton,
       signIn,

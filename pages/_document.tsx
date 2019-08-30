@@ -13,6 +13,10 @@ class Document extends NextDocument {
             name="viewport"
             content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no"
           />
+          <style>{`
+            #__next, html, body { height: 100% }
+          `}
+          </style>
         </Head>
         <body>
           <Main />
