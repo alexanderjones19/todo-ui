@@ -9,6 +9,7 @@ import gql from 'graphql-tag';
 
 import aws_config from './aws.config';
 import signIn from './resolvers/signInResolver';
+import signOut from './resolvers/signOutResolver';
 import signUp from './resolvers/signUpResolver';
 import toggleButton from './resolvers/toggleButtonResolver';
 import currentUser from './resolvers/currentUserResolver';
@@ -48,6 +49,7 @@ const client = new ApolloClient({
     Mutation: {
       toggleButton,
       signIn,
+      signOut,
       signUp
     }
   }
@@ -55,7 +57,8 @@ const client = new ApolloClient({
 
 cache.writeData({
   data: {
-    buttonToggle: false
+    buttonToggle: false,
+    currentUser: null
   }
 });
 
