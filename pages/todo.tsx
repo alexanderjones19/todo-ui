@@ -64,7 +64,7 @@ const TodoPage = () => {
   ] = useMutation<DeleteTodoMutation, DeleteTodoMutationVariables>(
     DELETE_TODO,
     {
-      update(cache, { data }) {
+      update(cache, { data: { deleteTodo } }) {
         const { allTodos } = cache.readQuery({ query: FETCH_TODOS });
         allTodos.todos.splice(allTodos.todos.findIndex(t => t.id === deleteTodo.id), 1);
         cache.writeQuery({
