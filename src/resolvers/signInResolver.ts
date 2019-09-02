@@ -1,6 +1,7 @@
 import Auth from '@aws-amplify/auth';
 
 import Resolver from '../models/Resolver';
+import { GET_CURRENT_USER } from '../queries/getCurrentUser';
 
 const signIn: Resolver = async (_root, variables, { cache }) => {
   let email = variables.email;
@@ -10,6 +11,10 @@ const signIn: Resolver = async (_root, variables, { cache }) => {
     password
   });
   const data = { user: user };
+  cache.writeQuery({
+    query: GET_CURRENT_USER,
+    data: { currentUser: user }
+  });
   return data;
 };
 

@@ -57,8 +57,7 @@ const client = new ApolloClient({
 
 cache.writeData({
   data: {
-    buttonToggle: false,
-    currentUser: null
+    buttonToggle: false
   }
 });
 

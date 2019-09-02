@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import useForm from 'react-hook-form';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import { FormControl } from '@material-ui/core';
+import { FormControl, FormHelperText } from '@material-ui/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 import FormProps from '../models/FormProps';
@@ -23,10 +23,11 @@ interface SignInFormData {
 
 interface SignInFormProps extends FormProps<SignInFormData> {
   loading: boolean;
+  error?: string;
 };
 
-const SignInForm: FC<SignInFormProps> = ({ onSubmit, loading }) => {
-  const { register, handleSubmit, errors } = useForm();
+const SignInForm: FC<SignInFormProps> = ({ onSubmit, loading, error: globalError }) => {
+  const { register, handleSubmit, setError, errors } = useForm();
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <TextField
@@ -70,6 +71,15 @@ const SignInForm: FC<SignInFormProps> = ({ onSubmit, loading }) => {
         >
           {loading ? <CircularProgress size={24} color="inherit" /> : 'Sign In' }
         </Button>
+        {
+          globalError ? 
+          <FormHelperText
+            error={!!globalError}
+          >
+            {globalError}
+          </FormHelperText> :
+          null
+        }
       </FormControl>
     </form>
   );
