@@ -4,6 +4,7 @@ import FormControl from '@material-ui/core/FormControl';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import FormHelperText from '@material-ui/core/FormHelperText';
 
 import FormProps from '../models/FormProps';
 import { matchingValidator } from './validators';
@@ -21,7 +22,7 @@ const signUpFormErrors = {
   }
 };
 
-interface SignUpFormData {
+export interface SignUpFormData {
   email?: string;
   password?: string;
   confirmPassword?: string;
@@ -29,9 +30,10 @@ interface SignUpFormData {
 
 interface SignUpFormProps extends FormProps<SignUpFormData> {
   loading: boolean;
+  error?: string;
 };
 
-const SignUpForm: FC<SignUpFormProps> = ({ onSubmit, loading }) => {
+const SignUpForm: FC<SignUpFormProps> = ({ onSubmit, loading, error: globalError }) => {
   const { register, handleSubmit, errors, watch } = useForm<SignUpFormData>();
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -95,6 +97,15 @@ const SignUpForm: FC<SignUpFormProps> = ({ onSubmit, loading }) => {
         >
           {loading ? <CircularProgress size={24} color="inherit" /> : 'Sign Up' }
         </Button>
+        {
+          globalError ? 
+          <FormHelperText
+            error={!!globalError}
+          >
+            {globalError}
+          </FormHelperText> :
+          null
+        }
       </FormControl>
     </form>
   );

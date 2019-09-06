@@ -1,9 +1,5 @@
 import gql from 'graphql-tag';
 
-export type CreateTodoMutation = {
- createTodo: (title: string) => void
-};
-
 export type CreateTodoMutationVariables = {
   title: string
 };

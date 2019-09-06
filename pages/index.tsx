@@ -9,10 +9,13 @@ import Typography from '@material-ui/core/Typography';
 
 import Layout from './_layout';
 import SignInForm from '../src/forms/SignInForm';
-import SignUpForm from '../src/forms/SignUpForm';
+import SignUpForm, { SignUpFormData } from '../src/forms/SignUpForm';
 import { SIGN_IN, SignInMutation, SignInMutationVariables } from '../src/mutations/signInMutation';
 import { SIGN_UP, SignUpMutation, SignUpMutationVariables } from '../src/mutations/signUpMutation';
 import useAuthGuard from '../src/hooks/data/useAuthGuard';
+import useLoadingState from '../src/hooks/useLoadingState';
+import useDataState from '../src/hooks/useDataState';
+import useErrorState from '../src/hooks/useErrorState';
 
 const useStyles = makeStyles({
   container: {
@@ -23,6 +26,14 @@ const useStyles = makeStyles({
 const IndexPage = () => {
   const classes = useStyles();
   const { userLoading } = useAuthGuard('/todo', null);
+  const {
+    trackLoading,
+    isLoading
+  } = useLoadingState();
+  const {
+    trackError,
+    getError
+  } = useErrorState();
 
   const [
     signIn,
@@ -49,6 +60,21 @@ const IndexPage = () => {
     return null;
   }
 
+  async function onSignUp(data: SignUpFormData) {
+    await signUp({ 
+      variables: { 
+        email: data.email, 
+        password: data.password 
+      }
+    });
+    return await signIn({
+      variables: {
+        email: data.email,
+        password: data.password
+      }
+    });
+  }
+
   return (
     <Layout>
       <Container className={classes.container} maxWidth="sm">
@@ -62,21 +88,18 @@ const IndexPage = () => {
               Sign Up
             </Typography>
             <SignUpForm
-              loading={signUpLoading}
-              onSubmit={(data) => {signUp({ 
-                variables: { 
-                  email: data.email, 
-                  password: data.password 
-                },
-                async update(cache) {
-                  await signIn({
-                    variables: {
-                      email: data.email,
-                      password: data.password
-                    }
-                  })
-                }
-              })}}
+              loading={signUpLoading || isLoading('signUp')}
+              error={
+                signUpError && signUpError.message ||
+                (getError('signUp') && getError('signUp') as string)
+              }
+              onSubmit={(data) => {
+                trackError(
+                  trackLoading(onSignUp(data), 'signUp'),
+                  'signUp',
+                  'Something went wrong, please try again later'
+                );
+              }}
             />
           </CardContent>
         </Card>
@@ -92,10 +115,10 @@ const IndexPage = () => {
               Sign In
             </Typography>
             <SignInForm
-              loading={signInLoading}
-              error={signInError && signInError.message}
+              loading={signInLoading && !isLoading('signUp')}
+              error={(signInError && !getError('signUp')) && signInError.message }
               onSubmit={(data) => {signIn({ 
-                variables: { 
+                variables: {
                   email: data.email, 
                   password: data.password 
                 }

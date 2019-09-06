@@ -14,21 +14,27 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import useForm from 'react-hook-form';
 
 import Layout from './_layout';
-import { FETCH_TODOS } from '../src/queries/fetchTodos';
-import { CREATE_TODO, CreateTodoMutation, CreateTodoMutationVariables } from '../src/mutations/createTodoMutation';
-import { DELETE_TODO, DeleteTodoMutation, DeleteTodoMutationVariables } from '../src/mutations/deleteTodoMutation';
+import { FETCH_TODOS, FetchTodosQuery } from '../src/queries/fetchTodos';
+import { CREATE_TODO, CreateTodoMutationVariables } from '../src/mutations/createTodoMutation';
+import { DELETE_TODO, DeleteTodoMutationVariables } from '../src/mutations/deleteTodoMutation';
 import useAuthGuard from '../src/hooks/data/useAuthGuard';
+import useLoadingState from '../src/hooks/useLoadingState';
+import Todo from '../src/models/Todo';
 
 const TodoPage = () => {
   useAuthGuard(null, '/');
   const { register, handleSubmit, setError, errors, reset } = useForm();
+  const {
+    isLoading: isDeleteTodoLoading,
+    trackLoading: trackDeleteTodoLoading
+  } = useLoadingState();
 
   const {
     data: todosData,
     loading: todosLoading,
     error: todosError,
     refetch: refetchTodos
-  } = useQuery(FETCH_TODOS);
+  } = useQuery<FetchTodosQuery>(FETCH_TODOS);
 
   const [
     createTodo,
@@ -37,8 +43,10 @@ const TodoPage = () => {
       loading: createTodoLoading,
       error: createTodoError
     }
-  ] = useMutation<CreateTodoMutation, CreateTodoMutationVariables>(
-    CREATE_TODO, 
+  ] = useMutation<
+    { createTodo: Todo },
+    CreateTodoMutationVariables
+  >(CREATE_TODO, 
     {
       onCompleted: () => {
         reset();
@@ -61,7 +69,10 @@ const TodoPage = () => {
       loading: deleteTodoLoading,
       error: deleteTodoError
     }
-  ] = useMutation<DeleteTodoMutation, DeleteTodoMutationVariables>(
+  ] = useMutation<
+    { deleteTodo: Todo },
+    DeleteTodoMutationVariables
+  >(
     DELETE_TODO,
     {
       update(cache, { data: { deleteTodo } }) {
@@ -91,7 +102,7 @@ const TodoPage = () => {
         </form>
         <List>
           {todosData && !todosLoading ? 
-            todosData.allTodos.todos.map((todo, i) =>
+            todosData.allTodos.todos.map((todo) =>
               <React.Fragment key={todo.id}>
                 <Divider />
                 <ListItem>
@@ -100,9 +111,14 @@ const TodoPage = () => {
                     <IconButton 
                       edge="end"
                       aria-label="delete"
-                      onClick={() => deleteTodo({ variables: { id: todo.id } })}
+                      onClick={() => {
+                        trackDeleteTodoLoading(
+                          deleteTodo({ variables: { id: todo.id } }),
+                          todo.id
+                        );
+                      }}
                     >
-                      { deleteTodoLoading ? <CircularProgress size={24} /> : <DeleteIcon /> }
+                      { (deleteTodoLoading && isDeleteTodoLoading(todo.id)) ? <CircularProgress size={24} /> : <DeleteIcon /> }
                     </IconButton>
                   </ListItemSecondaryAction>
                 </ListItem>
