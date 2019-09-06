@@ -2,14 +2,7 @@ import React from 'react';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import Container from '@material-ui/core/Container';
 import Button from '@material-ui/core/Button';
-import Divider from '@material-ui/core/Divider';
 import TextField from '@material-ui/core/TextField';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import useForm from 'react-hook-form';
 
@@ -19,6 +12,7 @@ import { CREATE_TODO, CreateTodoMutationVariables } from '../src/mutations/creat
 import { DELETE_TODO, DeleteTodoMutationVariables } from '../src/mutations/deleteTodoMutation';
 import useAuthGuard from '../src/hooks/data/useAuthGuard';
 import useLoadingState from '../src/hooks/useLoadingState';
+import TodoList from '../src/modules/todo/TodoList';
 import Todo from '../src/models/Todo';
 
 const TodoPage = () => {
@@ -100,32 +94,21 @@ const TodoPage = () => {
           ></TextField>
           <Button type="submit">Save</Button>
         </form>
-        <List>
-          {todosData && !todosLoading ? 
-            todosData.allTodos.todos.map((todo) =>
-              <React.Fragment key={todo.id}>
-                <Divider />
-                <ListItem>
-                  <ListItemText primary={todo.title} />
-                  <ListItemSecondaryAction>
-                    <IconButton 
-                      edge="end"
-                      aria-label="delete"
-                      onClick={() => {
-                        trackDeleteTodoLoading(
-                          deleteTodo({ variables: { id: todo.id } }),
-                          todo.id
-                        );
-                      }}
-                    >
-                      { (deleteTodoLoading && isDeleteTodoLoading(todo.id)) ? <CircularProgress size={24} /> : <DeleteIcon /> }
-                    </IconButton>
-                  </ListItemSecondaryAction>
-                </ListItem>
-              </React.Fragment> 
-            ) : 
-            <CircularProgress size={48}/>}
-        </List>
+        {todosData && !todosLoading ?
+          <TodoList
+            todos={todosData.allTodos.todos}
+            onDeleteTodo={(id) => {
+              trackDeleteTodoLoading(
+                deleteTodo({ variables: { id } }),
+                id
+              );
+            }}
+            onUpdateTodo={() => {}}
+            isDeleteTodoLoading={isDeleteTodoLoading}
+            isUpdateTodoLoading={() => false}
+          /> : 
+          <CircularProgress size={48}/>
+        }
       </Container>
     </Layout>
   );
