@@ -1,10 +1,7 @@
 import React from 'react';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import Container from '@material-ui/core/Container';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import useForm from 'react-hook-form';
 
 import Layout from './_layout';
 import { FETCH_TODOS, FetchTodosQuery } from '../src/queries/fetchTodos';
@@ -14,10 +11,10 @@ import useAuthGuard from '../src/hooks/data/useAuthGuard';
 import useLoadingState from '../src/hooks/useLoadingState';
 import TodoList from '../src/modules/todo/TodoList';
 import Todo from '../src/models/Todo';
+import CreateTodoForm from '../src/forms/CreateTodoForm';
 
 const TodoPage = () => {
   useAuthGuard(null, '/');
-  const { register, handleSubmit, setError, errors, reset } = useForm();
   const {
     isLoading: isDeleteTodoLoading,
     trackLoading: trackDeleteTodoLoading
@@ -26,8 +23,7 @@ const TodoPage = () => {
   const {
     data: todosData,
     loading: todosLoading,
-    error: todosError,
-    refetch: refetchTodos
+    error: todosError
   } = useQuery<FetchTodosQuery>(FETCH_TODOS);
 
   const [
@@ -42,9 +38,6 @@ const TodoPage = () => {
     CreateTodoMutationVariables
   >(CREATE_TODO, 
     {
-      onCompleted: () => {
-        reset();
-      },
       update(cache, { data: { createTodo } }) {
         const { allTodos } = cache.readQuery({ query: FETCH_TODOS });
         allTodos.todos = allTodos.todos.concat([createTodo])
@@ -86,14 +79,12 @@ const TodoPage = () => {
 
   return (
     <Layout>
-      <Container maxWidth="xl">
-        <form onSubmit={handleSubmit(onCreateTodo)}>
-          <TextField
-            name='title'
-            inputRef={register}
-          ></TextField>
-          <Button type="submit">Save</Button>
-        </form>
+      <Container maxWidth="xl" style={{paddingTop: '25px'}}>
+        <CreateTodoForm
+          onSubmit={onCreateTodo}
+          loading={createTodoLoading}
+          error={createTodoError && createTodoError.message}
+        />
         {todosData && !todosLoading ?
           <TodoList
             todos={todosData.allTodos.todos}

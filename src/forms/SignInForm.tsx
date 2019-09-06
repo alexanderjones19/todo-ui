@@ -68,6 +68,7 @@ const SignInForm: FC<SignInFormProps> = ({ onSubmit, loading, error: globalError
           variant="contained"
           size="large"
           color="primary"
+          disabled={loading}
         >
           {loading ? <CircularProgress size={24} color="inherit" /> : 'Sign In' }
         </Button>

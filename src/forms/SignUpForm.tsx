@@ -94,6 +94,7 @@ const SignUpForm: FC<SignUpFormProps> = ({ onSubmit, loading, error: globalError
           variant="contained"
           size="large"
           color="primary"
+          disabled={loading}
         >
           {loading ? <CircularProgress size={24} color="inherit" /> : 'Sign Up' }
         </Button>
