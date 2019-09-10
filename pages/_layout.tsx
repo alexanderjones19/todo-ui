@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useMutation, useQuery, useApolloClient } from '@apollo/react-hooks';
 
 import { SIGN_OUT, SignOutMutation } from '../src/mutations/signOutMutation';
 import { GET_CURRENT_USER, GetCurrentUserQuery } from '../src/queries/getCurrentUser';
@@ -18,6 +18,7 @@ const useStyles = makeStyles({
 const Layout: FC = ({ children }) => {
   const classes = useStyles({});
   const router = useRouter();
+  const client = useApolloClient();
 
   const {
     data: userData,
@@ -34,12 +35,7 @@ const Layout: FC = ({ children }) => {
   ] = useMutation<SignOutMutation>(SIGN_OUT, {
     onCompleted: () => {
       router.push('/');
-    },
-    update(cache) {
-      cache.writeQuery({
-        query: GET_CURRENT_USER,
-        data: { currentUser: null }
-      });
+      client.resetStore()
     }
   });
 
@@ -56,7 +52,7 @@ const Layout: FC = ({ children }) => {
             null}
         </Toolbar>
       </AppBar>
-      {children}
+      {!signOutLoading ? children : null}
     </React.Fragment>
   );
 }

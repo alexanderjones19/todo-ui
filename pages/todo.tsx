@@ -116,7 +116,7 @@ const TodoPage = () => {
             view={
               <Box>
                 <TodoList
-                  todos={todosData.allTodos ? todosData.allTodos.todos : []}
+                  todos={todosData && todosData.allTodos ? todosData.allTodos.todos : []}
                   onDeleteTodo={(id) => {
                     trackDeleteTodoLoading(
                       deleteTodo({ variables: { id } }),
