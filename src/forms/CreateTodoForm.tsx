@@ -1,4 +1,5 @@
 import React, { FC, useEffect } from 'react';
+import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import AddIcon from '@material-ui/icons/AddOutlined';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -35,7 +36,11 @@ const CreateTodoForm: FC<CreateTodoFormProps> = function({ onSubmit, loading, er
       <FormGroup row>
         <TextField
           name='title'
+          placeholder="Add todo..."
           style={{flexGrow: 1}}
+          margin="dense"
+          autoComplete="off"
+          variant="outlined"
           inputRef={register({ required: createTodoFormErrors.title.required })}
           helperText={
             (errors.title && errors.title.message) ||
@@ -43,12 +48,14 @@ const CreateTodoForm: FC<CreateTodoFormProps> = function({ onSubmit, loading, er
           }
           error={!!errors.password || !!globalError}
         ></TextField>
-        <IconButton
-          type="submit"
-          disabled={loading}
-        >
-          {loading ? <CircularProgress size={24} color="inherit" /> : <AddIcon color="primary" />}
-        </IconButton>
+        <Box marginLeft="5px">
+          <IconButton
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? <CircularProgress size={35} color="inherit" /> : <AddIcon fontSize="large" color="primary" />}
+          </IconButton>
+        </Box>
       </FormGroup>
     </form>
   )

@@ -1,7 +1,10 @@
 import React from 'react';
 import { useMutation, useQuery } from '@apollo/react-hooks';
+import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Paper from '@material-ui/core/Paper';
+import Collapse from '@material-ui/core/Collapse';
 
 import Layout from './_layout';
 import { FETCH_TODOS, FetchTodosQuery } from '../src/queries/fetchTodos';
@@ -12,12 +15,18 @@ import useLoadingState from '../src/hooks/useLoadingState';
 import TodoList from '../src/modules/todo/TodoList';
 import Todo from '../src/models/Todo';
 import CreateTodoForm from '../src/forms/CreateTodoForm';
+import { UPDATE_TODO, UpdateTodoMutationVariables } from '../src/mutations/updateTodoMutation';
+import Switch from '../src/components/Switch';
 
 const TodoPage = () => {
   useAuthGuard(null, '/');
   const {
     isLoading: isDeleteTodoLoading,
     trackLoading: trackDeleteTodoLoading
+  } = useLoadingState();
+  const {
+    isLoading: isUpdateTodoLoading,
+    trackLoading: trackUpdateTodoLoading,
   } = useLoadingState();
 
   const {
@@ -50,6 +59,20 @@ const TodoPage = () => {
   );
 
   const [
+    updateTodo,
+    {
+      data: updateTodoData,
+      loading: updateTodoLoading,
+      error: updateTodoError
+    }
+  ] = useMutation<
+    { updateTodo: Todo},
+    UpdateTodoMutationVariables
+  >(
+    UPDATE_TODO
+  );
+
+  const [
     deleteTodo,
     {
       data: deleteTodoData,
@@ -79,27 +102,47 @@ const TodoPage = () => {
 
   return (
     <Layout>
-      <Container maxWidth="xl" style={{paddingTop: '25px'}}>
-        <CreateTodoForm
-          onSubmit={onCreateTodo}
-          loading={createTodoLoading}
-          error={createTodoError && createTodoError.message}
-        />
-        {todosData && !todosLoading ?
-          <TodoList
-            todos={todosData.allTodos.todos}
-            onDeleteTodo={(id) => {
-              trackDeleteTodoLoading(
-                deleteTodo({ variables: { id } }),
-                id
-              );
-            }}
-            onUpdateTodo={() => {}}
-            isDeleteTodoLoading={isDeleteTodoLoading}
-            isUpdateTodoLoading={() => false}
-          /> : 
-          <CircularProgress size={48}/>
-        }
+      <Container maxWidth="xl" style={{paddingTop: '25px', paddingBottom: '25px'}}>
+        <Paper>
+          <Box padding="15px" paddingLeft="30px" paddingTop="20px">
+            <CreateTodoForm
+              onSubmit={onCreateTodo}
+              loading={createTodoLoading}
+              error={createTodoError && createTodoError.message}
+            />
+          </Box>
+          <Switch
+            case={todosData && todosData.allTodos && !todosLoading}
+            view={
+              <Box>
+                <TodoList
+                  todos={todosData.allTodos ? todosData.allTodos.todos : []}
+                  onDeleteTodo={(id) => {
+                    trackDeleteTodoLoading(
+                      deleteTodo({ variables: { id } }),
+                      id
+                    );
+                  }}
+                  onUpdateTodo={(id, title) => {
+                    trackUpdateTodoLoading(
+                      updateTodo({ variables: { id, title } }),
+                      id
+                    );
+                  }}
+                  isDeleteTodoLoading={isDeleteTodoLoading}
+                  isUpdateTodoLoading={isUpdateTodoLoading}
+                />
+              </Box>
+            }
+            default={
+              <Box padding="25px" justifyContent="center" display="flex">
+                <CircularProgress size={48}/>
+              </Box>
+            }
+            transition={Collapse}
+            timeout={650}
+          />
+        </Paper>
       </Container>
     </Layout>
   );

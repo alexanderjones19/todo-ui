@@ -1,7 +1,7 @@
 import React from 'react';
 import Router from 'next/router';
 import { useMutation } from '@apollo/react-hooks';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Container from '@material-ui/core/Container';
@@ -14,7 +14,6 @@ import { SIGN_IN, SignInMutation, SignInMutationVariables } from '../src/mutatio
 import { SIGN_UP, SignUpMutation, SignUpMutationVariables } from '../src/mutations/signUpMutation';
 import useAuthGuard from '../src/hooks/data/useAuthGuard';
 import useLoadingState from '../src/hooks/useLoadingState';
-import useDataState from '../src/hooks/useDataState';
 import useErrorState from '../src/hooks/useErrorState';
 
 const useStyles = makeStyles({
@@ -24,7 +23,7 @@ const useStyles = makeStyles({
 });
 
 const IndexPage = () => {
-  const classes = useStyles();
+  const classes = useStyles({});
   const { userLoading } = useAuthGuard('/todo', null);
   const {
     trackLoading,

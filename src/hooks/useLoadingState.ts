@@ -5,10 +5,10 @@ function useLoadingState() {
   function setLoading(id: string, loading = true) {
     if (loading) {
       loadingList.push(id);
-      setLoadingList(loadingList);
+      setLoadingList([].concat(loadingList));
     } else {
       loadingList.splice(loadingList.indexOf(id), 1);
-      setLoadingList(loadingList);
+      setLoadingList([].concat(loadingList));
     }
   }
 
@@ -32,7 +32,8 @@ function useLoadingState() {
   return {
     setLoading,
     isLoading,
-    trackLoading
+    trackLoading,
+    loadingList
   };
 }
 

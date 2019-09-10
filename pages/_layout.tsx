@@ -16,7 +16,7 @@ const useStyles = makeStyles({
 })
 
 const Layout: FC = ({ children }) => {
-  const classes = useStyles();
+  const classes = useStyles({});
   const router = useRouter();
 
   const {

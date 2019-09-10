@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "@material-ui/core": "4.3.3",
-    "@material-ui/icons": "^4.2.1",
+    "@material-ui/icons": "^4.3.3",
+    "@types/react-transition-group": "1.x",
     "apollo-cache-inmemory": "^1.6.2",
     "apollo-client": "^2.6.2",
     "apollo-link-context": "^1.0.17",
@@ -24,6 +25,7 @@
     "react-apollo": "^3.0.1",
     "react-dom": "^16.8.6",
     "react-hook-form": "^3.14.0",
+    "react-transition-group": "1.x",
     "styled-jsx": "^3.2.1"
   },
   "devDependencies": {
