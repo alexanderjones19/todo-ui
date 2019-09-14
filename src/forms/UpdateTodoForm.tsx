@@ -33,7 +33,7 @@ const UpdateTodoForm: FC<UpdateTodoFormProps & React.HTMLAttributes<HTMLFormElem
     style,
     defaultValue
   }) {
-  const { register, handleSubmit, errors, reset, formState, triggerValidation } = useForm();
+  const { register, handleSubmit, reset, formState, triggerValidation } = useForm();
   useEffect(() => {
     if (!loading && !globalError) {
       reset();
@@ -57,7 +57,6 @@ const UpdateTodoForm: FC<UpdateTodoFormProps & React.HTMLAttributes<HTMLFormElem
             required: updateTodoFormErrors.title.required,
             validate: (value) => (value !== defaultValue ? true : '')
           })}
-          error={!!errors.password || !!globalError}
           endAdornment={
             <Switch
               case={formState.isValid}
