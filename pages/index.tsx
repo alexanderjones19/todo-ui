@@ -13,8 +13,7 @@ import SignUpForm, { SignUpFormData } from '../src/forms/SignUpForm';
 import { SIGN_IN, SignInMutation, SignInMutationVariables } from '../src/mutations/signInMutation';
 import { SIGN_UP, SignUpMutation, SignUpMutationVariables } from '../src/mutations/signUpMutation';
 import useAuthGuard from '../src/hooks/data/useAuthGuard';
-import useLoadingState from '../src/hooks/useLoadingState';
-import useErrorState from '../src/hooks/useErrorState';
+import useAsyncState from '../src/hooks/useAsyncState';
 
 const useStyles = makeStyles({
   container: {
@@ -26,13 +25,9 @@ const IndexPage = () => {
   const classes = useStyles({});
   const { userLoading } = useAuthGuard('/todo', null);
   const {
-    trackLoading,
-    isLoading
-  } = useLoadingState();
-  const {
-    trackError,
-    getError
-  } = useErrorState();
+    trackAsyncState,
+    asyncState
+  } = useAsyncState();
 
   const [
     signIn,
@@ -59,7 +54,7 @@ const IndexPage = () => {
     return null;
   }
 
-  async function onSignUp(data: SignUpFormData) {
+  async function handleSignUp(data: SignUpFormData) {
     await signUp({ 
       variables: { 
         email: data.email, 
@@ -87,16 +82,15 @@ const IndexPage = () => {
               Sign Up
             </Typography>
             <SignUpForm
-              loading={signUpLoading || isLoading('signUp')}
+              loading={signUpLoading || (asyncState['signUp'] && asyncState['signUp'].loading)}
               error={
                 signUpError && signUpError.message ||
-                (getError('signUp') && getError('signUp') as string)
+                (asyncState['signUp'] && asyncState['signUp'].error && 'Something went wrong, please try again later')
               }
               onSubmit={(data) => {
-                trackError(
-                  trackLoading(onSignUp(data), 'signUp'),
-                  'signUp',
-                  'Something went wrong, please try again later'
+                trackAsyncState(
+                  handleSignUp(data),
+                  'signUp'
                 );
               }}
             />
@@ -114,8 +108,8 @@ const IndexPage = () => {
               Sign In
             </Typography>
             <SignInForm
-              loading={signInLoading && !isLoading('signUp')}
-              error={(signInError && !getError('signUp')) && signInError.message }
+              loading={signInLoading && !(asyncState['signUp'] && asyncState['signUp'].loading)}
+              error={(signInError && !(asyncState['signUp'] && asyncState['signUp'].error)) && signInError.message }
               onSubmit={(data) => {signIn({ 
                 variables: {
                   email: data.email, 

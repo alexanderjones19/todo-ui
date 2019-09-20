@@ -9,10 +9,6 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
 import CancelIcon from '@material-ui/icons/Cancel';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Collapse from '@material-ui/core/Collapse';
-import Grow from '@material-ui/core/Grow';
-import Fade from '@material-ui/core/Fade';
-import Slide from '@material-ui/core/Slide';
 import Zoom from '@material-ui/core/Zoom';
 
 import Todo from '../../models/Todo';
@@ -24,14 +20,7 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     '&:hover': {
       background: theme.palette.background.default
-    },
-    transition: theme.transitions.create(
-      ['height', 'flex-grow'],
-      {duration: theme.transitions.duration.short}
-    )
-  },
-  hidden: {
-    display: 'none'
+    }
   }
 }))
 
@@ -41,6 +30,8 @@ interface TodoListItemProps {
   onUpdateTodo: (id: string, title: string) => void;
   deleteTodoLoading: boolean;
   updateTodoLoading: boolean;
+  deleteTodoError: boolean;
+  updateTodoError: boolean;
 }
 
 const TodoListItem: FC<TodoListItemProps> = function({
@@ -48,15 +39,20 @@ const TodoListItem: FC<TodoListItemProps> = function({
   onDeleteTodo,
   onUpdateTodo,
   deleteTodoLoading,
-  updateTodoLoading
+  updateTodoLoading,
+  deleteTodoError,
+  updateTodoError,
 }) {
   const classes = useStyles({});
   const [isEditing, setIsEditing] = useState<boolean>(false);
+
   useEffect(() => {
-    if (!updateTodoLoading) {
+    // disable editing when loading stops if there is no error
+    if (!updateTodoLoading && !updateTodoError) {
       setIsEditing(false);
     }
-  }, [updateTodoLoading]);
+  }, [updateTodoLoading, updateTodoError]);
+
   return (
     <ListItem className={classes.listItem}>
       <ListItemIcon>
@@ -74,6 +70,7 @@ const TodoListItem: FC<TodoListItemProps> = function({
           <UpdateTodoForm
             defaultValue={todo.title}
             loading={updateTodoLoading}
+            error={updateTodoError ? 'Error updating todo' : null}
             onSubmit={data => onUpdateTodo(todo.id, data.title)}
           />
         }
@@ -83,7 +80,7 @@ const TodoListItem: FC<TodoListItemProps> = function({
         transition={Zoom}
       />
       <ListItemSecondaryAction>
-        <IconButton 
+        <IconButton
           edge="end"
           aria-label="delete"
           onClick={() => onDeleteTodo(todo.id)}

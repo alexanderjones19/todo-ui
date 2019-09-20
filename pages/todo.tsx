@@ -11,23 +11,26 @@ import { FETCH_TODOS, FetchTodosQuery } from '../src/queries/fetchTodos';
 import { CREATE_TODO, CreateTodoMutationVariables } from '../src/mutations/createTodoMutation';
 import { DELETE_TODO, DeleteTodoMutationVariables } from '../src/mutations/deleteTodoMutation';
 import useAuthGuard from '../src/hooks/data/useAuthGuard';
-import useLoadingState from '../src/hooks/useLoadingState';
 import TodoList from '../src/modules/todo/TodoList';
 import Todo from '../src/models/Todo';
 import CreateTodoForm from '../src/forms/CreateTodoForm';
 import { UPDATE_TODO, UpdateTodoMutationVariables } from '../src/mutations/updateTodoMutation';
 import Switch from '../src/components/Switch';
+import ErrorSnackbar from '../src/components/ErrorSnackbar';
+import useAsyncState from '../src/hooks/useAsyncState';
 
 const TodoPage = () => {
   useAuthGuard(null, '/');
+
   const {
-    isLoading: isDeleteTodoLoading,
-    trackLoading: trackDeleteTodoLoading
-  } = useLoadingState();
+    trackAsyncState: trackUpdateTodoState,
+    asyncState: updateTodoState
+  } = useAsyncState();
+
   const {
-    isLoading: isUpdateTodoLoading,
-    trackLoading: trackUpdateTodoLoading,
-  } = useLoadingState();
+    trackAsyncState: trackDeleteTodoState,
+    asyncState: deleteTodoState
+  } = useAsyncState();
 
   const {
     data: todosData,
@@ -118,19 +121,19 @@ const TodoPage = () => {
                 <TodoList
                   todos={todosData && todosData.allTodos ? todosData.allTodos.todos : []}
                   onDeleteTodo={(id) => {
-                    trackDeleteTodoLoading(
+                    trackDeleteTodoState(
                       deleteTodo({ variables: { id } }),
                       id
                     );
                   }}
                   onUpdateTodo={(id, title) => {
-                    trackUpdateTodoLoading(
+                    trackUpdateTodoState(
                       updateTodo({ variables: { id, title } }),
                       id
                     );
                   }}
-                  isDeleteTodoLoading={isDeleteTodoLoading}
-                  isUpdateTodoLoading={isUpdateTodoLoading}
+                  updateTodoState={updateTodoState}
+                  deleteTodoState={deleteTodoState}
                 />
               </Box>
             }
@@ -144,6 +147,7 @@ const TodoPage = () => {
           />
         </Paper>
       </Container>
+      <ErrorSnackbar open={!!(deleteTodoError || updateTodoError)}/>
     </Layout>
   );
 }

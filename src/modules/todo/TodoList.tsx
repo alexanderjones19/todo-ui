@@ -1,27 +1,27 @@
 import React, { FC } from 'react';
 import List from '@material-ui/core/List';
 import Divider from '@material-ui/core/Divider';
-import Zoom from '@material-ui/core/Zoom';
 import Box from '@material-ui/core/Box';
 
 import TodoListItem from './TodoListItem';
 import Todo from '../../models/Todo';
 import ListTransition from '../../components/ListTransition';
+import AsyncStateMap from '../../models/AsyncStateMap';
 
 interface TodoListProps {
   todos: Todo[];
   onDeleteTodo: (id: string) => void;
   onUpdateTodo: (id: string, title: string) => void;
-  isDeleteTodoLoading: (id: string) => boolean;
-  isUpdateTodoLoading: (id: string) => boolean;
+  updateTodoState: AsyncStateMap;
+  deleteTodoState: AsyncStateMap;
 }
 
 const TodoList: FC<TodoListProps> = function({
   todos,
   onDeleteTodo,
   onUpdateTodo,
-  isDeleteTodoLoading,
-  isUpdateTodoLoading
+  updateTodoState,
+  deleteTodoState
 }) {
   return (
     <List>
@@ -33,8 +33,10 @@ const TodoList: FC<TodoListProps> = function({
               todo={todo}
               onDeleteTodo={onDeleteTodo}
               onUpdateTodo={onUpdateTodo}
-              deleteTodoLoading={isDeleteTodoLoading(todo.id)}
-              updateTodoLoading={isUpdateTodoLoading(todo.id)}
+              deleteTodoLoading={deleteTodoState[todo.id] && deleteTodoState[todo.id].loading}
+              updateTodoLoading={updateTodoState[todo.id] && updateTodoState[todo.id].loading}
+              deleteTodoError={deleteTodoState[todo.id] && deleteTodoState[todo.id].error}
+              updateTodoError={updateTodoState[todo.id] && updateTodoState[todo.id].error}
             />
           </Box>
         )}
