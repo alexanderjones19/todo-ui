@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 
-import useDataState from './useDataState';
-
 type AsyncState = {
   loading?: boolean;
   error?: boolean;

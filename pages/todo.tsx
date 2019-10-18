@@ -1,5 +1,4 @@
-import React from 'react';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import React, { useEffect, useRef } from 'react';
 import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -7,20 +6,25 @@ import Paper from '@material-ui/core/Paper';
 import Collapse from '@material-ui/core/Collapse';
 
 import Layout from './_layout';
-import { FETCH_TODOS, FetchTodosQuery } from '../src/queries/fetchTodos';
-import { CREATE_TODO, CreateTodoMutationVariables } from '../src/mutations/createTodoMutation';
-import { DELETE_TODO, DeleteTodoMutationVariables } from '../src/mutations/deleteTodoMutation';
 import useAuthGuard from '../src/hooks/data/useAuthGuard';
 import TodoList from '../src/modules/todo/TodoList';
-import Todo from '../src/models/Todo';
-import CreateTodoForm from '../src/forms/CreateTodoForm';
-import { UPDATE_TODO, UpdateTodoMutationVariables } from '../src/mutations/updateTodoMutation';
+import CreateTodoForm, { CreateTodoFormData, CreateTodoFormRef } from '../src/forms/CreateTodoForm';
 import Switch from '../src/components/Switch';
 import ErrorSnackbar from '../src/components/ErrorSnackbar';
 import useAsyncState from '../src/hooks/useAsyncState';
+import { persistor } from '../src/client';
+import useFetchTodos from '../src/hooks/data/useFetchTodos';
+import useCreateTodo from '../src/hooks/data/useCreateTodo';
+import useUpdateTodo from '../src/hooks/data/useUpdateTodo';
+import useDeleteTodo from '../src/hooks/data/useDeleteTodo';
 
 const TodoPage = () => {
-  useAuthGuard(null, '/');
+  const createTodoFormRef = useRef<CreateTodoFormRef>(null);
+  const {
+    userData,
+    userLoading,
+    userError
+  } = useAuthGuard(null, null);
 
   const {
     trackAsyncState: trackUpdateTodoState,
@@ -32,11 +36,34 @@ const TodoPage = () => {
     asyncState: deleteTodoState
   } = useAsyncState();
 
-  const {
-    data: todosData,
-    loading: todosLoading,
-    error: todosError
-  } = useQuery<FetchTodosQuery>(FETCH_TODOS);
+  const isAuthenticated = !userLoading && !!userData;
+
+  const [
+    fetchTodos,
+    {
+      data: todosData,
+      loading: todosLoading,
+      error: todosError
+    }
+  ] = useFetchTodos(isAuthenticated);
+
+  async function fetchTodosFromCache() {
+    await persistor.restore();
+    fetchTodos();
+  }
+
+  useEffect(() => {
+    // authenticated
+    if (!userLoading && userData) {
+      persistor.pause();
+      fetchTodos();
+    }
+    // unauthenticated
+    else if (!userLoading) {
+      persistor.resume();
+      fetchTodosFromCache();
+    }
+  }, [userData, userLoading]);
 
   const [
     createTodo,
@@ -45,21 +72,7 @@ const TodoPage = () => {
       loading: createTodoLoading,
       error: createTodoError
     }
-  ] = useMutation<
-    { createTodo: Todo },
-    CreateTodoMutationVariables
-  >(CREATE_TODO, 
-    {
-      update(cache, { data: { createTodo } }) {
-        const { allTodos } = cache.readQuery({ query: FETCH_TODOS });
-        allTodos.todos = allTodos.todos.concat([createTodo])
-        cache.writeQuery({
-          query: FETCH_TODOS,
-          data: { allTodos }
-        });
-      }
-    }
-  );
+  ] = useCreateTodo(!!userData);
 
   const [
     updateTodo,
@@ -68,12 +81,7 @@ const TodoPage = () => {
       loading: updateTodoLoading,
       error: updateTodoError
     }
-  ] = useMutation<
-    { updateTodo: Todo},
-    UpdateTodoMutationVariables
-  >(
-    UPDATE_TODO
-  );
+  ] = useUpdateTodo(!!userData);
 
   const [
     deleteTodo,
@@ -82,25 +90,30 @@ const TodoPage = () => {
       loading: deleteTodoLoading,
       error: deleteTodoError
     }
-  ] = useMutation<
-    { deleteTodo: Todo },
-    DeleteTodoMutationVariables
-  >(
-    DELETE_TODO,
-    {
-      update(cache, { data: { deleteTodo } }) {
-        const { allTodos } = cache.readQuery({ query: FETCH_TODOS });
-        allTodos.todos.splice(allTodos.todos.findIndex(t => t.id === deleteTodo.id), 1);
-        cache.writeQuery({
-          query: FETCH_TODOS,
-          data: { allTodos }
-        });
-      }
-    }
-  )
+  ] = useDeleteTodo(!!userData);
 
-  const onCreateTodo = function(data) {
-    createTodo({ variables: {title: data.title} });
+  if (userLoading) {
+    return null;
+  }
+
+  const handleCreateTodo = async function(data: CreateTodoFormData) {
+    try {
+      const createResult = await createTodo({ 
+        variables: {title: data.title}
+      });
+      createTodoFormRef.current.reset();
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  const handleDeleteTodo = function(id: string) {
+    trackDeleteTodoState(
+      deleteTodo({
+        variables: { id }
+      }),
+      id
+    );
   }
 
   return (
@@ -109,8 +122,9 @@ const TodoPage = () => {
         <Paper>
           <Box padding="15px" paddingLeft="30px" paddingTop="20px">
             <CreateTodoForm
-              onSubmit={onCreateTodo}
-              loading={createTodoLoading}
+              ref={createTodoFormRef}
+              onSubmit={handleCreateTodo}
+              loading={createTodoLoading && !!userData}
               error={createTodoError && createTodoError.message}
             />
           </Box>
@@ -120,12 +134,7 @@ const TodoPage = () => {
               <Box>
                 <TodoList
                   todos={todosData && todosData.allTodos ? todosData.allTodos.todos : []}
-                  onDeleteTodo={(id) => {
-                    trackDeleteTodoState(
-                      deleteTodo({ variables: { id } }),
-                      id
-                    );
-                  }}
+                  onDeleteTodo={handleDeleteTodo}
                   onUpdateTodo={(id, title) => {
                     trackUpdateTodoState(
                       updateTodo({ variables: { id, title } }),

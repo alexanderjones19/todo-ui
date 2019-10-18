@@ -12,3 +12,12 @@ export const CREATE_TODO = gql`
     }
   }
 `;
+
+export const CREATE_TODO_LOCAL = gql`
+  mutation CreateTodoLocal($title: String!) {
+    createTodo(title: $title) @client {
+      id
+      title
+    }
+  }
+`

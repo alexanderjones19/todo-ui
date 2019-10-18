@@ -12,6 +12,9 @@ const useAuthGuard = (authRoute: string, unauthRoute: string) => {
     error: userError,
   } = useQuery<GetCurrentUserQuery>(
     GET_CURRENT_USER,
+    {
+      fetchPolicy: 'no-cache'
+    }
   );
   useEffect(() => {
     if (userLoading) {

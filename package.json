@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "test": "jest",
-    "dev": "concurrently next \"jest --watchAll --ci\"",
+    "dev-test": "concurrently next \"jest --watchAll --ci\"",
+    "dev": "next",
     "build": "next build",
     "start": "next start"
   },
@@ -12,13 +13,16 @@
     "@material-ui/icons": "^4.3.3",
     "@types/react-transition-group": "1.x",
     "apollo-cache-inmemory": "^1.6.2",
+    "apollo-cache-persist": "^0.1.1",
     "apollo-client": "^2.6.2",
+    "apollo-link": "^1.2.13",
     "apollo-link-context": "^1.0.17",
     "apollo-link-http": "^1.5.14",
     "aws-amplify": "^1.1.28",
     "cross-fetch": "^3.0.3",
     "dotenv": "^8.0.0",
     "graphql-tag": "^2.10.1",
+    "graphql-tools": "^4.0.5",
     "next": "^8.1.0",
     "react": "^16.8.6",
     "react-adopt": "^0.6.0",
@@ -26,7 +30,9 @@
     "react-dom": "^16.8.6",
     "react-hook-form": "^3.14.0",
     "react-transition-group": "1.x",
-    "styled-jsx": "^3.2.1"
+    "redux-persist-node-storage": "^2.0.0",
+    "styled-jsx": "^3.2.1",
+    "uuid": "^3.3.3"
   },
   "devDependencies": {
     "@types/enzyme": "^3.9.3",

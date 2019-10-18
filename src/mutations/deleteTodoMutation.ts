@@ -12,3 +12,12 @@ export const DELETE_TODO = gql`
     }
   }
 `;
+
+export const DELETE_TODO_LOCAL = gql`
+  mutation DeleteTodo($id: ID!) {
+    deleteTodo(id: $id) @client {
+      id
+      title
+    }
+  }
+`;

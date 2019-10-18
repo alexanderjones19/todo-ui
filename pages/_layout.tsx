@@ -1,10 +1,9 @@
 import React, { FC } from 'react';
-import { useRouter } from 'next/router';
 import { makeStyles } from '@material-ui/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Button from '@material-ui/core/Button';
-import { useMutation, useQuery, useApolloClient } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 
 import { SIGN_OUT, SignOutMutation } from '../src/mutations/signOutMutation';
 import { GET_CURRENT_USER, GetCurrentUserQuery } from '../src/queries/getCurrentUser';
@@ -17,14 +16,17 @@ const useStyles = makeStyles({
 
 const Layout: FC = ({ children }) => {
   const classes = useStyles({});
-  const router = useRouter();
-  const client = useApolloClient();
 
   const {
     data: userData,
     error: userError,
     loading: userLoading
-   } = useQuery<GetCurrentUserQuery>(GET_CURRENT_USER);
+   } = useQuery<GetCurrentUserQuery>(
+     GET_CURRENT_USER,
+     {
+       fetchPolicy: 'no-cache'
+     }
+  );
 
   const [
     signOut,
@@ -32,12 +34,7 @@ const Layout: FC = ({ children }) => {
       error: signOutError,
       loading: signOutLoading
     }
-  ] = useMutation<SignOutMutation>(SIGN_OUT, {
-    onCompleted: () => {
-      router.push('/');
-      client.resetStore()
-    }
-  });
+  ] = useMutation<SignOutMutation>(SIGN_OUT);
 
   return (
     <React.Fragment>

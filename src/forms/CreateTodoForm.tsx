@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import React, { RefForwardingComponent, useImperativeHandle, forwardRef } from 'react';
 import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import AddIcon from '@material-ui/icons/AddOutlined';
@@ -6,6 +6,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
 import FormGroup from '@material-ui/core/FormGroup';
 import useForm from 'react-hook-form';
+import { makeStyles } from '@material-ui/core';
 
 import FormProps from '../models/FormProps';
 
@@ -15,8 +16,18 @@ const createTodoFormErrors = {
   }
 }
 
-interface CreateTodoFormData {
+const useStyles = makeStyles({
+  formGroup: {
+    flexWrap: 'nowrap'
+  }
+});
+
+export interface CreateTodoFormData {
   title: string;
+}
+
+export interface CreateTodoFormRef {
+  reset: Function;
 }
 
 interface CreateTodoFormProps extends FormProps<CreateTodoFormData> {
@@ -24,16 +35,17 @@ interface CreateTodoFormProps extends FormProps<CreateTodoFormData> {
   error?: string;
 }
 
-const CreateTodoForm: FC<CreateTodoFormProps> = function({ onSubmit, loading, error: globalError }) {
+const CreateTodoForm: RefForwardingComponent<CreateTodoFormRef, CreateTodoFormProps> = function({ onSubmit, loading, error: globalError }, ref) {
   const { register, handleSubmit, errors, reset } = useForm();
-  useEffect(() => {
-    if (!loading && !globalError) {
+  const classes = useStyles({});
+  useImperativeHandle(ref, () => ({
+    reset: () => {
       reset();
     }
-  }, [loading, globalError]);
+  }));
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <FormGroup row>
+      <FormGroup row className={classes.formGroup}>
         <TextField
           name='title'
           placeholder="Add todo..."
@@ -61,4 +73,4 @@ const CreateTodoForm: FC<CreateTodoFormProps> = function({ onSubmit, loading, er
   )
 }
 
-export default CreateTodoForm;
+export default forwardRef(CreateTodoForm);
